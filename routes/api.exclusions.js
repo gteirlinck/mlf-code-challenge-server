@@ -7,8 +7,7 @@ const exclusions = [
 ];
 
 router.get('/', (req, res) => {
-    const metadata = { total_count: exclusions.length };
-    res.json({ _metadata: metadata, records: exclusions });
+    res.json(exclusions);
 });
 
 module.exports = router;

@@ -13,8 +13,7 @@ const records = [
 ];
 
 router.get('/', (req, res) => {
-    const metadata = { total_count: records.length };
-    res.json({ _metadata: metadata, records: records });
+    res.json(records);
 });
 
 module.exports = router;
