@@ -1,15 +1,17 @@
 var express = require('express');
+const session = require('express-session');
 const cors = require('cors');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 
-var index = require('./routes/index');
-var users = require('./routes/users');
 const exclusions = require('./routes/api.exclusions');
 const records = require('./routes/api.records');
+const authRoute = require('./routes/auth');
 
 var app = express();
 
@@ -19,6 +21,16 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
+
+// passport configuration
+require('./config/passport')(passport);
+app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy((username, password, done) => {
+  return done(null, username);
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -32,10 +44,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/users', users);
 app.use('/api/exclusions', exclusions);
 app.use('/api/records', records);
+app.use('/auth', authRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
