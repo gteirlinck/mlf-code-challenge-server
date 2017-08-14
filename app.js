@@ -1,4 +1,5 @@
 var express = require('express');
+const cors = require('cors');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -11,6 +12,13 @@ const exclusions = require('./routes/api.exclusions');
 const records = require('./routes/api.records');
 
 var app = express();
+
+// CORS configuration
+const corsOptions = {
+  origin: 'http://localhost:4200',
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
