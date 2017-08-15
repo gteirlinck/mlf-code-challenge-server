@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('express-jwt');
-const jwks = require('jwks-rsa');
+// const jwt = require('express-jwt');
+// const jwks = require('jwks-rsa');
+const authCheck = require('./routes/authCheck');
 
 const exclusions = [
     { host: 'website-c', excludedSince: new Date(2016, 11, 1) },
@@ -21,17 +22,17 @@ const records = [
 
 // JWT middleware that will ensure the validity of our token. 
 // require each protected route to have a valid access_token sent in the Authorization header
-const authCheck = jwt({
-  secret: jwks.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: 'https://gteirlinck.auth0.com/.well-known/jwks.json'
-  }),
-  audience: 'mlf-app-api',
-  issuer: 'https://gteirlinck.auth0.com/',
-  algorithms: ['RS256']
-});
+// const authCheck = jwt({
+//   secret: jwks.expressJwtSecret({
+//     cache: true,
+//     rateLimit: true,
+//     jwksRequestsPerMinute: 5,
+//     jwksUri: 'https://gteirlinck.auth0.com/.well-known/jwks.json'
+//   }),
+//   audience: 'mlf-app-api',
+//   issuer: 'https://gteirlinck.auth0.com/',
+//   algorithms: ['RS256']
+// });
 
 router.get('/records', authCheck, (req, res) => {
     res.json(records);

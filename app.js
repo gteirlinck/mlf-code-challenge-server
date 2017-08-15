@@ -1,10 +1,13 @@
 const express = require('express');
 const app = express();
 
+const config = require('./config');
+
 // Dependencies
 const cors = require('cors');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -15,8 +18,25 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-const routes = require('./routes');
-app.use('/api', routes);
+// Mongoose
+const connectionString = config.mongoDbConnectionString || process.env.DB_CON;
+mongoose.connect(connectionString, { useMongoClient: true }, err => {
+  if (err) {
+    console.error(`Failed to connect to MongoDB: ${err.message}`);
+  } else {
+    console.log('MongoDB connection established');
+  }
+});
+
+const WebsiteVisitsRecord = require('./models/websiteVisitsRecord');
+const ExclusionItem = require('./models/exclusionItem');
+
+// Routing
+const websiteVisitsRecordsRoute = require('./routes/websiteVisitsRecords');
+app.use('/api/records', websiteVisitsRecordsRoute);
+
+const exclusionItemsRoute = require('./routes/exclusionItems');
+app.use('/api/exclusions', exclusionItemsRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
