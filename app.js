@@ -1,52 +1,22 @@
-var express = require('express');
-const session = require('express-session');
+const express = require('express');
+const app = express();
+
+// Dependencies
 const cors = require('cors');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+const logger = require('morgan');
+const bodyParser = require('body-parser');
 
-const exclusions = require('./routes/api.exclusions');
-const records = require('./routes/api.records');
-const authRoute = require('./routes/auth');
-
-var app = express();
-
-// CORS configuration
-const corsOptions = {
-  origin: 'http://localhost:4200',
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
-
-// passport configuration
-require('./config/passport')(passport);
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.use(new LocalStrategy((username, password, done) => {
-  return done(null, username);
-}));
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/exclusions', exclusions);
-app.use('/api/records', records);
-app.use('/auth', authRoute);
+app.use(cors({
+  origin: 'http://localhost:4200',
+  optionsSuccessStatus: 200
+}));
+
+const routes = require('./routes');
+app.use('/api', routes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -62,8 +32,7 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 500).json(err);
 });
 
 module.exports = app;
