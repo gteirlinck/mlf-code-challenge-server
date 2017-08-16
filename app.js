@@ -13,8 +13,10 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use(express.static('public'));
+
 app.use(cors({
-  origin: 'http://localhost:4200',
+  origin: config.corsAllowedOrigin || process.env.CORS_ALLOWED_ORIGIN,
   optionsSuccessStatus: 200
 }));
 
@@ -34,9 +36,6 @@ const ExclusionItem = require('./models/exclusionItem');
 // Routing
 const websiteVisitsRecordsRoute = require('./routes/websiteVisitsRecords');
 app.use('/api/records', websiteVisitsRecordsRoute);
-
-const exclusionItemsRoute = require('./routes/exclusionItems');
-app.use('/api/exclusions', exclusionItemsRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
