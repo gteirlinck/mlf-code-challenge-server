@@ -4,7 +4,6 @@ const app = express();
 const config = require('./config');
 
 // Dependencies
-const path = require('path');
 const cors = require('cors');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
@@ -13,8 +12,6 @@ const mongoose = require('mongoose');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors({
   origin: config.corsAllowedOrigin || process.env.CORS_ALLOWED_ORIGIN,
